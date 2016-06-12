@@ -1,0 +1,162 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmCount":{
+            "type": "int",
+            "defaultValue": "5",
+            "metadata": {
+                "Description":"VM count"
+            }
+        },
+        "adminName":{
+            "type": "string",
+            "defaultValue": "devopsmgr",
+            "metadata": {
+                "Description":"VM login name"
+            }
+        },
+        "adminPassword":{
+            "type": "securestring",
+            "metadata": {
+                "Description":"VM login password"
+            }
+        },
+        "VNetName":{
+            "type": "string",
+            "metadata": {
+                "Description":"Virtual Network Name"
+            }
+        },
+        "SubNetName":{
+            "type": "string",
+            "metadata": {
+                "Description":"Subnet Name"
+            }
+        },
+        "VNETRGName":{
+            "type": "string",
+            "metadata": {
+                "Description":"Related VNET Resource Group Name"
+            }
+        }
+    },
+    "variables": {
+        
+    },
+    "resources": [
+     {
+         "type": "Microsoft.Storage/storageAccounts",
+         "name": "[toLower('ARMHOLVMstorage')]",
+         "apiVersion": "2015-06-15",
+         "location": "[resourceGroup().location]",
+         "tags": {
+             "displayName": "ARM HOL VM Storage Account"
+         },
+         "properties": {
+             "accountType": "Standard_LRS"
+           }
+     },
+     {
+         "apiVersion": "2015-06-15",
+         "type": "Microsoft.Network/publicIPAddresses",
+         "name": "[concat('ARMHOLVM-',copyIndex(),'-PublicIP')]",
+         "location": "[resourceGroup().location]",
+         "tags": {
+             "displayName": "[concat('PublicIPAddress-',copyIndex())]"
+          } ,
+         "properties": {
+             "publicIPAllocationMethod": "Dynamic",
+             "dnsSettings": {
+                 "domainNameLabel": "[concat(toLower('ARMHOLVM-'),copyIndex())]"
+             }
+         },
+         "copy": {
+           "name": "publicIPAddressCopy",
+           "count":"[parameters('vmCount')]"   
+         }
+     },
+     {
+         "apiVersion": "2015-06-15",
+         "type": "Microsoft.Network/networkInterfaces",
+         "name": "[concat('ARMHOLVM-',copyIndex(),'-NetworkInterface')]",
+         "location": "[resourceGroup().location]",
+         "dependsOn": [
+             "[concat('Microsoft.Network/publicIPAddresses/ARMHOLVM-',copyIndex(),'-PublicIP')]"
+         ],
+         "tags": {
+             "displayName": "[concat('ARMHOLVM Network Interface ',copyIndex())]"
+          } ,
+         "properties": {
+             "ipConfigurations": [
+                   {
+                     "name": "ipconfig1",
+                     "properties": {
+                         "privateIPAllocationMethod": "Dynamic",
+                         "publicIPAddress": {
+                             "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('ARMHOLVM-',copyIndex(),'-PublicIP'))]"
+                         },
+                         "subnet": {
+                             "id": "[concat(resourceId(parameters('VNETRGName'),'Microsoft.Network/virtualNetworks', parameters('VNetName')), concat('/subnets/',parameters('SubNetName')))]"
+                           }
+                     }
+                 }
+               ]
+         },
+        "copy": {
+           "name": "publicIPAddressCopy",
+           "count":"[parameters('vmCount')]"   
+         }
+     },
+     {
+         "apiVersion": "2015-06-15",
+         "type": "Microsoft.Compute/virtualMachines",
+         "name": "[concat('ARMHOLVM-',copyIndex())]",
+         "location": "[resourceGroup().location]",
+          "copy": {
+           "name": "VMCopy",
+           "count":"[parameters('vmCount')]"   
+         },
+         "dependsOn": [
+             "[concat('Microsoft.Storage/storageAccounts/', toLower('ARMHOLVMstorage'))]",
+             "[concat('Microsoft.Network/networkInterfaces/ARMHOLVM-',copyIndex(),'-NetworkInterface')]"
+         ],
+         "tags": {
+             "displayName": "[concat('ARMHOLVM-',copyIndex())]"
+          } ,
+         "properties": {
+             "hardwareProfile": {
+                 "vmSize": "Standard_A2"
+             },
+             "osProfile": {
+                 "computerName": "[concat('ARMHOLVM-',copyIndex())]",
+                 "adminUsername": "[parameters('adminName')]",
+                 "adminPassword": "[parameters('adminPassword')]"
+             },
+             "storageProfile":  {
+                 "imageReference": {
+                     "publisher": "MicrosoftWindowsServer",
+                     "offer": "WindowsServer",
+                     "sku": "2012-R2-Datacenter",
+                     "version": "latest"
+                 },
+                 "osDisk": {
+                     "name": "[concat('ARMHOLVM-',copyIndex(),'-OSDisk')]",
+                     "vhd": {
+                         "uri": "[concat('http://', toLower('ARMHOLVMstorage'), '.blob.core.chinacloudapi.cn/vhds/ARMHOLVM-',copyIndex(),'-OSDisk.vhd')]"
+                     },
+                     "caching": "ReadWrite",
+                     "createOption": "FromImage"
+                   }
+             },
+             "networkProfile": {
+                 "networkInterfaces": [
+                     {
+                         "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('ARMHOLVM-',copyIndex(),'-NetworkInterface'))]"
+                     }
+                 ]
+             }
+         }
+     } 
+    ]
+}
