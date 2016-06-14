@@ -42,7 +42,7 @@
         }
     },
     "variables": {
-        
+        "dscmoduleUri":"https://armdemodscstorage.blob.core.chinacloudapi.cn/dscconfiguration/JumpboxDscConfiguration.ps1.zip"
     },
     "resources": [
      {
@@ -156,7 +156,35 @@
                      }
                  ]
              }
-         }
+         },
+         "resources": [
+             {
+                 "type": "extensions",
+                 "name": "[concat('ARMHOLVM-',copyIndex(),'-DSC-AzurePS')]",
+                 "apiVersion": "2015-06-15",
+                 "location": "[resourceGroup().location]",
+                 "tags": {
+                     "displayName": "[concat('ARMHOLVM-',copyIndex(),'-DSC-AzurePS')]"
+                 },
+                 "dependsOn": [
+                     "[concat('Microsoft.Compute/virtualMachines/ARMHOLVM-',copyIndex())]"
+                 ],
+                 "properties": {
+                     "publisher": "Microsoft.Powershell.Test",
+                     "type": "DSC",
+                     "typeHandlerVersion": "2.19",
+                     "autoUpgradeMinorVersion": true,
+                     "settings": {
+                         "modulesUrl": "[variables('dscmoduleUri')]",
+                         "sasToken":"",
+                         "configurationFunction": "JumpboxDscConfiguration.ps1\\AzurePowershell",
+                         "properties": {
+                             //"nodeName": "localhost"
+                         }
+                     }
+                 }
+             }
+         ]
      } 
     ]
 }
