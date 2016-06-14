@@ -1,0 +1,21 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "value": "ChinaCATARMBPVault"
+        },
+        "tenantId": {
+            "value": "82a8b6cc-3dcc-4661-8efb-d4e3ff10d28e"
+        },
+        "objectId": {
+            "value": "b628cbf9-7f41-4ca9-a159-04bc390f04ff"
+        },
+        "secretName": {
+            "value": "LoginPassword"
+        },        
+        "enabledVaultForTemplateDeployment": {
+            "value": true
+        }
+    }
+}
