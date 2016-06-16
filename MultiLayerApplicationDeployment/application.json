@@ -1,0 +1,128 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "NamePlaceHolder":{
+            "type": "string"
+        },
+        "adminName":{
+            "type": "string"
+        },
+        "adminPwd":{
+            "type": "securestring"
+        },
+        "storageSuffix":{
+            "type": "string"
+        }
+      
+    },
+    "variables": {
+        "VNETRGName": "[concat('RG-ARM-HOL-',parameters('NamePlaceHolder'),'-Network')]",
+        "SecureRGName":"[concat('RG-ARM-HOL-',parameters('NamePlaceHolder'),'-KV')]",
+        "VNETName":"[concat('armdemo-vnet-',parameters('NamePlaceHolder'))]",
+        "storageAccountName":"[toLower(concat('armholvmstg',parameters('NamePlaceHolder')))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "WindowsVM1 Storage Account"
+            },
+            "properties": {
+                "accountType": "Standard_LRS"
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "WindowsVM1-PublicIP",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "PublicIPAddress"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat('arm-hol-kv-',parameters('NamePlaceHolder')))]"
+                }
+            }
+        },       
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "WindowsVM1-NetworkInterface",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "Microsoft.Network/publicIPAddresses/WindowsVM1-PublicIP"
+            ],
+            "tags": {
+                "displayName": "WindowsVM1 Network Interface"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'WindowsVM1-PublicIP')]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId(variables('VNETRGName'),'Microsoft.Network/virtualNetworks', variables('VNETName')), '/subnets/Frontend')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "WindowsVM1",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "Microsoft.Network/networkInterfaces/WindowsVM1-NetworkInterface"
+            ],
+            "tags": {
+                "displayName": "WindowsVM1"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_A2"
+                },
+                "osProfile": {
+                    "computerName": "WindowsVM1",
+                    "adminUsername": "[parameters('adminName')]",
+                    "adminPassword": "[parameters('adminPwd')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2012-R2-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "WindowsVM1OSDisk",
+                        "vhd": {
+                            "uri": "[concat('http://', variables('storageAccountName'),'.blob.core.',parameters('storageSuffix'),'/vhds/WindowsVM1-OSDisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'WindowsVM1-NetworkInterface')]"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "keyVaultName":{
+        "NamePlaceHolder":{
             "type": "string",
             "metadata": {
                 "description":"Name of the vault"
@@ -61,13 +61,14 @@
         },
         "enableVaultForVolumeEncryption":{
             "type": "bool",
-            "defaultValue": false,
+            "defaultValue": true,
             "metadata": {
                 "description":"Specifies if the vault is enabled for volume encryption"
             }
         },
         "secretName":{
             "type": "string",
+            "defaultValue": "LoginPassword",
             "metadata": {
                 "description":"Name of the secret to store in the vault"
             }
@@ -79,10 +80,13 @@
             }
         }
     },
+    "variables": {
+        "vaultName":"[concat('armdemo-kv-', parameters('NamePlaceHolder'))]"
+    },
     "resources": [
         {
             "type": "Microsoft.KeyVault/vaults",
-            "name": "[parameters('keyVaultName')]",
+            "name": "[variables('vaultName')]",
             "apiVersion": "2015-06-01",
             "location": "[resourceGroup().location]",
             "tags": {
@@ -90,9 +94,9 @@
                 "Type":"Security"
             },
             "properties": {
-                "enableForDeployment":"[parameters('enabledForDeployment')]",
-                "enableVaultForTemplateDeployment":"[parameters('enabledVaultForTemplateDeployment')]",
-                "enableVaultForVolumeEncryption":"[parameters('enableVaultForVolumeEncryption')]",
+                "enabledForDeployment":"[parameters('enabledForDeployment')]",
+                "enabledForTemplateDeployment":"[parameters('enabledVaultForTemplateDeployment')]",
+                "enabledForDiskEncryption":"[parameters('enableVaultForVolumeEncryption')]",
                 "tenantId":"[parameters('tenantId')]",
                 "accessPolicies":[
                     {
@@ -122,7 +126,7 @@
                         "value":"[parameters('secretValue')]"
                     },
                     "dependsOn": [
-                        "[concat('Microsoft.KeyVault/vaults/',parameters('keyVaultName'))]"
+                        "[concat('Microsoft.KeyVault/vaults/',variables('vaultName'))]"
                     ]
                 }
             ]

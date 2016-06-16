@@ -1,0 +1,23 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "NamePlaceHolder":{
+            "value":"weisun"
+            },
+          "adminName":{
+              "value": "wei"
+          },
+          "adminPwd":{
+              "reference": {
+                  "keyVault": {
+                      "id": "/subscriptions/812441bb-dd47-463f-8ded-fcc8c95f9754/resourceGroups/RG-ARM-HOL-weisun-KV/providers/Microsoft.KeyVault/vaults/armdemo-kv-weisun"
+                  },
+                  "secretName": "LoginPassword"
+              }
+          },
+          "storageSuffix":{
+              "value": "windows.net"
+          }
+    }
+}
