@@ -16,6 +16,7 @@
         }
     },
     "variables": {
+        "webfarmplanName":"siteapplicationPlan",
         "websiteName":"[concat('webiste',uniqueString(resourceGroup().id))]",
         "cacheName":"[concat('cache',uniqueString(resourceGroup().id))]"
     },
@@ -70,53 +71,53 @@
         
        
         {
-            "apiVersion": "2015-08-01",
-            "name": "siteapplicationPlan",
+            "apiVersion": "2015-04-01",
+            "name": "[variables('webfarmplanName')]",
             "type": "Microsoft.Web/serverfarms",
             "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "[parameters('deployenvironment').websiteInstanceSku]",
-                "capacity": "[parameters('deployenvironment').websiteInstanceCount]"
-            },
             "tags": {
-                "displayName": "siteapplicationPlan"
+                "displayName": "[variables('webfarmplanName')]"
             },
             "properties": {
-                "name": "siteapplicationPlan",
+                "name": "[variables('webfarmplanName')]",
+                "sku": "[parameters('deployenvironment').websiteInstanceSku]",
+                "workerSize": "[parameters('deployenvironment').websiteInstanceSize]",
                 "numberOfWorkers": "[parameters('deployenvironment').websiteInstanceCount]"
             }
         },
         {
-            "apiVersion": "2015-08-01",
+            "apiVersion": "2015-06-01",
             "name": "[variables('websiteName')]",
-            "type": "Microsoft.Web/sites",
+            "type": "Microsoft.Web/Sites",
             "location": "[resourceGroup().location]",
             "tags": {
-                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/siteapplication')]": "Resource",
+                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('webfarmplanName'))]": "Resource",
                 "displayName": "[variables('websiteName')]"
             },
             "dependsOn": [
-                "Microsoft.Web/serverfarms/siteapplicationplan",
+                "[concat('Microsoft.Web/serverFarms/', variables('webfarmplanName'))]",
                 "[concat('Microsoft.Cache/Redis/',variables('cacheName'))]"
             ],
             "properties": {
-                "name": "FEApplication",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'siteapplicationPlan')]",
-                "siteConfig":{
-                    "connectionstrings":[
-                        {
-                            "name":"",
-                            "connectionstrings":"[concat('Data Source=tcp:',reference(concat('Microsoft.Sql/server/',parameters('databaseServerSettings').sqlserverName)).fullyQualifiedDomainName,',1433;Initial Catalog=',parameters('databaseServerSettings').databaseName,';User Id=',parameters('databaseServerSettings').databaseLoginName,'@',parameters('databaseServerSettings').sqlserverName,';Password=',parameters('databaseServerSettings').databaseLoginPassword,';')]",
-                            "type":2
-                        }
+                "name": "[variables('websiteName')]",
+                "serverFarmId": "[variables('webfarmplanName')]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2014-11-01",
+                    "type": "config",
+                    "name":"connectionstrings",
+                    "dependsOn":[
+                        "[concat('Microsoft.Web/Sites/',variables('websiteName'))]"
                     ],
-                    "appsettings":[
-                        {
-                            "CacheConnection":"[concat(variables('cacheName'),parameters('cacheSettings').cacheEndpoint,',abortConnection=false,ssl=true,password=',listKeys(resourceId('Microsoft.Cache/Redis',variables('cacheName')),'2015-08-01').primaryKey)]"
-                        }
-                    ]
-                }
+                    "properties": {
+                        "DefaultConnection": {
+              "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('databaseServerSettings').sqlserverName)).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseServerSettings').databaseName, ';User Id=', parameters('databaseServerSettings').databaseLoginName, '@', parameters('databaseServerSettings').sqlserverName, ';Password=', parameters('databaseServerSettings').databaseLoginPassword, ';')]",
+              "type": 2
             }
+                    }
+                }
+            ]
         },
         {
             "apiVersion": "2014-04-01-preview",

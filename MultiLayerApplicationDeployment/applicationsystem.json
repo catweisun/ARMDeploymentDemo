@@ -71,7 +71,8 @@
     },
     "variables": {
         "deployenvironmentDev":{
-            "websiteInstanceSku":"S1",
+            "websiteInstanceSku":"Standard",
+            "websiteInstanceSize":0,
             "websiteInstanceCount":1,
             "databaseInstanceSku":"Basic",
             "redisCacheFamily":"Basic",
@@ -80,7 +81,8 @@
             "backendVMInstanceCount":1
         },
         "deployenvironmentTest":{
-            "websiteInstanceSku":"S1",
+            "websiteInstanceSku":"Standard",
+            "websiteInstanceSize":1,
             "websiteInstanceCount":1,
             "databaseInstanceSku":"Standard",
             "redisCacheFamily":"Basic",
@@ -89,7 +91,8 @@
             "backendVMInstanceCount":1
         },
         "deployenvironmentProduction":{
-            "websiteInstanceSku":"S2",
+            "websiteInstanceSku":"Standard",
+            "websiteInstanceSize":2,
             "websiteInstanceCount":2,
             "databaseInstanceSku":"Premium",
             "redisCacheFamily":"Standard",
