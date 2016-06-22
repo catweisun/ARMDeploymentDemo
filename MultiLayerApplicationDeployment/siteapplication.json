@@ -1,0 +1,139 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deployenvironment":{
+            "type": "object",
+            "metadata": {
+                "description":"deployment evnironment settings"
+            }
+        },
+        "databaseServerSettings":{
+            "type": "object"
+        },
+        "cacheSettings":{
+            "type": "object"
+        }
+    },
+    "variables": {
+        "websiteName":"[concat('webiste',uniqueString(resourceGroup().id))]",
+        "cacheName":"[concat('cache',uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+          {
+            
+            "apiVersion": "2014-04-01-preview",
+            "name": "[parameters('databaseServerSettings').sqlserverName]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[parameters('databaseServerSettings').sqlserverName]"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('databaseServerSettings').databaseLoginName]",
+                "administratorLoginPassword": "[parameters('databaseServerSettings').databaseLoginPassword]",
+                "version": "12.0"
+            },
+            "resources": [
+                 {
+                    "type": "databases",
+                    "name": "[parameters('databaseServerSettings').databaseName]",
+                    "apiVersion": "2014-04-01-preview",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "displayName": "[parameters('databaseServerSettings').databaseName]"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/',parameters('databaseServerSettings').sqlserverName)]"
+                    ],
+                    "properties": {                        
+                        "edition": "[parameters('deployenvironment').databaseInstanceSku]",
+                        "maxSizeBytes": "1073741824",
+                        "requestedServiceObjectiveName": "[parameters('deployenvironment').databaseInstanceSku]"
+                    }
+                },
+                 {                    
+                    "apiVersion": "2014-04-01-preview",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/',parameters('databaseServerSettings').sqlserverName)]"
+                    ],
+                    "location": "[resourceGroup().location]",
+                    "name": "AllowAllWindowsAzureIps",
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "0.0.0.0"
+                    },
+                    "type": "firewallrules"
+                }
+            ]
+        },
+        
+       
+        {
+            "apiVersion": "2015-08-01",
+            "name": "siteapplicationPlan",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('deployenvironment').websiteInstanceSku]",
+                "capacity": "[parameters('deployenvironment').websiteInstanceCount]"
+            },
+            "tags": {
+                "displayName": "siteapplicationPlan"
+            },
+            "properties": {
+                "name": "siteapplicationPlan",
+                "numberOfWorkers": "[parameters('deployenvironment').websiteInstanceCount]"
+            }
+        },
+        {
+            "apiVersion": "2015-08-01",
+            "name": "[variables('websiteName')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/siteapplication')]": "Resource",
+                "displayName": "[variables('websiteName')]"
+            },
+            "dependsOn": [
+                "Microsoft.Web/serverfarms/siteapplicationplan",
+                "[concat('Microsoft.Cache/Redis/',variables('cacheName'))]"
+            ],
+            "properties": {
+                "name": "FEApplication",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'siteapplicationPlan')]",
+                "siteConfig":{
+                    "connectionstrings":[
+                        {
+                            "name":"",
+                            "connectionstrings":"[concat('Data Source=tcp:',reference(concat('Microsoft.Sql/server/',parameters('databaseServerSettings').sqlserverName)).fullyQualifiedDomainName,',1433;Initial Catalog=',parameters('databaseServerSettings').databaseName,';User Id=',parameters('databaseServerSettings').databaseLoginName,'@',parameters('databaseServerSettings').sqlserverName,';Password=',parameters('databaseServerSettings').databaseLoginPassword,';')]",
+                            "type":2
+                        }
+                    ],
+                    "appsettings":[
+                        {
+                            "CacheConnection":"[concat(variables('cacheName'),parameters('cacheSettings').cacheEndpoint,',abortConnection=false,ssl=true,password=',listKeys(resourceId('Microsoft.Cache/Redis',variables('cacheName')),'2015-08-01').primaryKey)]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2014-04-01-preview",
+            "name": "[variables('cacheName')]",
+            "type": "Microsoft.Cache/Redis",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "MidCache"
+            },
+            "properties": {
+                "sku": {
+                    "name": "[parameters('deployenvironment').redisCacheFamily]",
+                    "family": "C",
+                    "capacity": "[parameters('deployenvironment').redisCacheCapacity]"
+                },
+                "redisVersion": "2.8"
+            }
+        }
+    ]
+}

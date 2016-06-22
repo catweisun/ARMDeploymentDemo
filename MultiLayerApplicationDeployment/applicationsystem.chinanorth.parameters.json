@@ -1,0 +1,37 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "NamePlaceHolder":{
+            "value": "weisun"
+        },
+        "subnetName":{
+            "value": "Frontend"
+        },
+        "deployenvironment":{
+            "value": "Dev"
+        },
+        "jumpbox":{
+            "value": "Disabled"
+        },
+        "Cloud":{
+            "value": "AzureChinaCloud"
+        },
+        "virtualNetworkName":{
+            "value": "armdemo-vnet-weisun"
+        },
+        "virtualNetworkResourceGroupName":{
+            "value": "RG-ARM-HOL-weisun-Network"
+        },
+        "adminUserName":{
+            "value": "weisun"
+        },
+        "databaseLoginName":{
+            "value": "dbadminweisun"
+        },
+        "databaseName":{
+            "value": "siteappdb"
+        }
+
+    }
+}

@@ -1,0 +1,238 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "NamePlaceHolder":{
+            "type": "string"
+        },
+        "adminUserName":{
+            "type": "string"
+
+        },
+        "adminPassword":{
+            "type": "securestring"
+        },
+        "databaseLoginName":{
+            "type": "string"
+        },
+        "databaseLoginPassword":{
+            "type": "securestring"
+        },
+        "databaseName":{
+            "type": "string"
+        },
+        
+        "virtualNetworkResourceGroupName":{
+            "type": "string",
+            "metadata": {
+                "description":"virtual network resource group name"
+            }
+        },
+        "virtualNetworkName":{
+            "type": "string",
+            "metadata": {
+                "description":"Virtual Network Name"
+            }
+        },
+        "subnetName":{
+            "type": "string",
+            "metadata": {
+                "description":"subnet name"
+            }
+        },
+        "jumpbox":{
+            "type": "string",
+            "defaultValue": "Enabled",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ],
+            "metadata": {
+                "description":"The flag allowing to enable the jumpbox vm"
+            }
+        },
+        "deployenvironment":{
+            "type": "string",
+            "defaultValue": "Dev",
+            "allowedValues": [
+                "Dev",
+                "Test",
+                "Production"
+            ]
+        },
+        "Cloud":{
+            "type": "string",
+            "defaultValue": "AzureChinaCloud",
+            "allowedValues": [
+                "AzureChinaCloud",
+                "AzureCloud"
+            ]
+        }
+    },
+    "variables": {
+        "deployenvironmentDev":{
+            "websiteInstanceSku":"S1",
+            "websiteInstanceCount":1,
+            "databaseInstanceSku":"Basic",
+            "redisCacheFamily":"Basic",
+            "redisCacheCapacity":2,
+            "backendVMInstanceSku":"Standard_A1",
+            "backendVMInstanceCount":1
+        },
+        "deployenvironmentTest":{
+            "websiteInstanceSku":"S1",
+            "websiteInstanceCount":1,
+            "databaseInstanceSku":"Standard",
+            "redisCacheFamily":"Basic",
+            "redisCacheCapacity":2,
+            "backendVMInstanceSku":"Standard_A1",
+            "backendVMInstanceCount":1
+        },
+        "deployenvironmentProduction":{
+            "websiteInstanceSku":"S2",
+            "websiteInstanceCount":2,
+            "databaseInstanceSku":"Premium",
+            "redisCacheFamily":"Standard",
+            "redisCacheCapacity":2,
+            "backendVMInstanceSku":"Standard_A3",
+            "backendVMInstanceCount":2
+        },
+        "osFamilyWindows":{
+            "imagePublisher":"MicrosoftWindowsServer",
+            "imageOffer":"WindowsServer",
+            "imageSKU":"2012-R2-Datacenter"
+        },
+        "osFamilyUbuntu":{
+            "imagePublisher":"",
+            "imageOffer":"",
+            "imageSKU":""
+        },
+        "vmStrongAccountContainer":"vhds",
+        "vmStorageAccountDomainAzureCloud":".blob.core.windows.net",
+        "vmStorageAccountDomainAzureChinaCloud":".bloc.core.chinacloudapi.cn",
+        "cacheEndpointAzureCloud":".redis.cache.windows.net",
+        "cacheEndpointAzureChinaCloud":".redis.cache.chinacloudapi.cn",
+        "cacheEndpoint":"[variables(concat('cacheEndpoint',parameters('Cloud')))]",
+        "vmStorageAccountDomain":"[variables(concat('vmStorageAccountDomain',parameters('Cloud')))]",
+        "vnetId":"[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+        "scriptUrl":"https://armdemotemplatestorage.blob.core.chinacloudapi.cn/armtemplates/",
+        "templateBaseUrl":"[variables('scriptUrl')]",
+        "sharedTemplateUrl":"[concat(variables('templateBaseUrl'),'shared-resource.json')]",
+        "siteapplicationTemplateUrl":"[concat(variables('templateBaseUrl'),'siteapplication.json')]",
+        "jumpboxTemplateEnabled":"applicationjumpbox.json",
+        "jumpboxTemplateDisabled":"empty-resource.json",
+        "jumpboxTemplateUrl":"[concat(variables('templateBaseUrl'),variables(concat('jumpboxTemplate',parameters('jumpbox'))))]",
+        "commonSettings":{},
+        "cacheSettings":{
+            "cacheEndpoint":"[variables('cacheEndpoint')]"
+        },
+        "storageAccountName":"[toLower(concat(parameters('NamePlaceHolder'),'vmstg'))]",
+        "storageSettings":{
+            "vhdStorageAccountName":"[variables('storageAccountName')]",
+            "vhdContainerName":"[variables('vmStrongAccountContainer')]",
+            "destinationVhdsContainer":"[concat('https://',variables('storageAccountName'),variables('vmStorageAccountDomain'),'/',variables('vmStrongAccountContainer'))]"
+        },
+        "networkSettings":{
+            "VNETResourceGroupName":"[concat('RG-ARM-HOL-',parameters('NamePlaceHolder'),'-Network')]",
+            "virtualNetworkName":"[parameters('virtualNetworkName')]",
+            "subnetName":"[parameters('subnetName')]",
+            "dnsName":"[concat('jumpbox-',parameters('NamePlaceHolder'))]"           
+        },
+        "machineSettings":{
+            "adminUserName":"[parameters('adminUserName')]",
+            "machineNamePrefix":"coffeshop-",
+            "osImageReference":{
+                "publisher":"[variables('osFamilyWindows').imagePublisher]",
+                "offer":"[variables('osFamilyWindows').imageOffer]",
+                "sku":"[variables('osFamilyWindows').imageSKU]"
+            }
+        },
+        "databaseServerSettings":{
+            "databaseLoginName":"[parameters('databaseLoginName')]",
+            "databaseLoginPassword":"[parameters('databaseLoginPassword')]",
+            "sqlserverName":"[concat('armdemodb',parameters('NamePlaceHolder'))]",
+            "databaseName":"[parameters('databaseName')]"
+        },
+        "environmentSpec":"[variables(concat('deployenvironment',parameters('deployenvironment')))]"
+    },
+    "resources": [
+        {
+            "name": "shared-resources",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('sharedTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "commonSettings":{
+                        "value": "[variables('commonSettings')]"
+                    },
+                    "storageSettings":{
+                        "value": "[variables('storageSettings')]"
+                    },
+                    "databaseServerSettings":{
+                        "value": "[variables('databaseServerSettings')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "jumpbox-resources",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/','shared-resources')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('jumpboxTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "commonSettings":{
+                        "value": "[variables('commonSettings')]"
+                    },
+                    "storageSettings":{
+                        "value": "[variables('storageSettings')]"
+                    },
+                    "networkSettings":{
+                        "value": "[variables('networkSettings')]"
+                    },
+                    "machineSettings":{
+                        "value": "[variables('machineSettings')]"
+                    },
+                    "adminPassword":{
+                        "value": "[parameters('adminPassword')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "siteapplication",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('siteapplicationTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "deployenvironment":{
+                        "value": "[variables('environmentSpec')]"
+                    },
+                    "databaseServerSettings":{
+                        "value": "[variables('databaseServerSettings')]"
+                    },
+                    "cacheSettings":{
+                        "value": "[variables('cacheSettings')]"
+                    }
+                }
+            }
+        }
+    ]
+}
