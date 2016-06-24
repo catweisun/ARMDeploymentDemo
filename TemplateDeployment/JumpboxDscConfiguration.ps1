@@ -31,7 +31,7 @@ Configuration AzurePowershell{
             return @{"IsFileExist" = $IsFileExist}
         }
         TestScript = {
-               return ((Test-Path "C:\HOL\MultiLayerAppliction") -and (Test-Path "C:\HOL\Automation" ) )
+               return ((Test-Path "C:\HOL\MultiLayerApplication") -and (Test-Path "C:\HOL\Automation" ) )
         }
         SetScript = {
             if( -not (Test-Path "C:\HOL"))
