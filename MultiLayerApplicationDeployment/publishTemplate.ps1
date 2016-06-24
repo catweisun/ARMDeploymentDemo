@@ -24,6 +24,7 @@ Set-AzureStorageBlobContent -Container $templateContainerName -File keyvault.chi
 Set-AzureStorageBlobContent -Container $templateContainerName -File network.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File network.chinanorth.parameters.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File shared-resource.json -Context $ctx -Force|Out-Null
+Set-AzureStorageBlobContent -Container $templateContainerName -File empty-shared-resource.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File siteapplication.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File applicationjumpbox.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File empty-resource.json -Context $ctx -Force|Out-Null

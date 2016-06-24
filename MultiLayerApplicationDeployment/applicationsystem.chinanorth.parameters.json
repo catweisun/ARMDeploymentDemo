@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "NamePlaceHolder":{
-            "value": "weisun"
+            "value": "{NamePlaceHolder}"
         },
         "subnetName":{
             "value": "Frontend"
@@ -12,22 +12,22 @@
             "value": "Dev"
         },
         "jumpbox":{
-            "value": "Enabled"
+            "value": "Disable"
         },
         "Cloud":{
             "value": "AzureChinaCloud"
         },
         "virtualNetworkName":{
-            "value": "armdemo-vnet-weisun"
+            "value": "armdemo-vnet-{NamePlaceHolder}"
         },
         "virtualNetworkResourceGroupName":{
-            "value": "RG-ARM-HOL-weisun-Network"
+            "value": "RG-ARM-HOL-{NamePlaceHolder}-Network"
         },
         "adminUserName":{
-            "value": "weisun"
+            "value": "{NamePlaceHolder}"
         },
         "databaseLoginName":{
-            "value": "dbadminweisun"
+            "value": "dbadmin{NamePlaceHolder}"
         },
         "databaseName":{
             "value": "siteappdb"

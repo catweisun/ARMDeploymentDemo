@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "NamePlaceHolder": {
-            "value": "weisun"
+            "value": "{NamePlaceHolder}"
         },
         "tenantId": {
             "value": "82a8b6cc-3dcc-4661-8efb-d4e3ff10d28e"

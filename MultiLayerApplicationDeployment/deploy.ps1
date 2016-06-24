@@ -18,7 +18,7 @@ if($IsLocalTemplate)
     $TemplateBaseUri = $pwd.Path +"\"
 }
 Write-Host $TemplateBaseUri
-$EnvSecureStore = @{"Seq"=1;"RGNameSuffix"="KV";"ScriptName"="keyvault"}
+#$EnvSecureStore = @{"Seq"=1;"RGNameSuffix"="KV";"ScriptName"="keyvault"}
 $EnvNetwork = @{"Seq"=2;"RGNameSuffix"="Network";"ScriptName"="network"}
 #$EnvApplication = @{"Seq"=3;"RGNameSuffix"="Application";"ScriptName"="application"}
 $EnvApplication = @{"Seq"=3;"RGNameSuffix"="Application";"ScriptName"="applicationsystem"}
