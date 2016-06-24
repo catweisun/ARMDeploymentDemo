@@ -19,7 +19,7 @@ if($cnt -eq $null)
 Set-AzureStorageBlobContent -Container $templateContainerName -File deploy.ps1 -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File applicationsystem.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File applicationsystem.chinanorth.parameters.json -Context $ctx -Force|Out-Null
-Set-AzureStorageBlobContent -Container $templateContainerName -File keyvault.json -Context $ctx
+Set-AzureStorageBlobContent -Container $templateContainerName -File keyvault.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File keyvault.chinanorth.parameters.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File network.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File network.chinanorth.parameters.json -Context $ctx -Force|Out-Null
