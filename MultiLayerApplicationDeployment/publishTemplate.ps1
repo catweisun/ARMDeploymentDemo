@@ -16,16 +16,19 @@ if($cnt -eq $null)
     New-AzureStorageContainer -Name $templateContainerName -Permission Blob -Context $ctx |Out-Null
 }
 #Azure\Remove-AzureStorageBlob -Blob "JumpboxDscConfiguration.ps1.zip" -Container $templateContainerName -Context $ctx
+Set-AzureStorageBlobContent -Container $templateContainerName -File deploy.ps1 -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File applicationsystem.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File applicationsystem.chinanorth.parameters.json -Context $ctx -Force|Out-Null
-
+Set-AzureStorageBlobContent -Container $templateContainerName -File keyvault.json -Context $ctx
 Set-AzureStorageBlobContent -Container $templateContainerName -File keyvault.chinanorth.parameters.json -Context $ctx -Force|Out-Null
+Set-AzureStorageBlobContent -Container $templateContainerName -File network.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File network.chinanorth.parameters.json -Context $ctx -Force|Out-Null
-#Set-AzureStorageBlobContent -Container $templateContainerName -File applicationsystem.eastasia.parameters.json -Context $ctx
 Set-AzureStorageBlobContent -Container $templateContainerName -File shared-resource.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File siteapplication.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File applicationjumpbox.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File empty-resource.json -Context $ctx -Force|Out-Null
+Set-AzureStorageBlobContent -Container $templateContainerName -File updateLocalParameters.ps1 -Context $ctx -Force|Out-Null
+Set-AzureStorageBlobContent -Container $templateContainerName -File updateKeyVaultParameters.ps1 -Context $ctx -Force|Out-Null
 Write-Host "completed!"
 #publish DSC configuration
 #Publish-AzureRmVMDscConfiguration -ResourceGroupName $RGNameTemplate -StorageAccountName $StgAcctName -ContainerName $templateContainerName -StorageEndpointSuffix $storageEndpointSuffix -ConfigurationPath JumpboxDscConfiguration.ps1

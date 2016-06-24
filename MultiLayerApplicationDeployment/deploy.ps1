@@ -32,7 +32,7 @@ else {
     Login-AzureRmAccount
     Select-AzureRmSubscription -SubscriptionId 812441bb-dd47-463f-8ded-fcc8c95f9754 
 }
-
+$beginTime = Get-Date
 $resources|Sort-Object -Property{$_.Seq}|foreach{
     $RGName = "RG-ARM-HOL-"+$RGNamePlaceHolder+"-"+$_.RGNameSuffix
     $RGTemplate = $TemplateBaseUri+$_.ScriptName+".json"
@@ -62,4 +62,8 @@ $resources|Sort-Object -Property{$_.Seq}|foreach{
         #New-AzureRmResourceGroupDeployment -Name $DeploymentName -ResourceGroupName $RGName -TemplateUri $RGTemplate -TemplateParameterUri $RGTemplateParameter #-NamePlaceHolder $RGNamePlaceHolder          
     }
     Write-Host -ForegroundColor Green "Deploy" $DeploymentName "is completed". 
+    
 }
+$endTIme =Get-Date
+$totalSeconds = ($endTIme-$beginTime).TotalSeconds
+Write-Host "Total use " $totalSeconds

@@ -73,7 +73,7 @@
                                  "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'JumpboxPublicIP')]"
                              },
                              "subnet": {
-                                 "id": "[concat(resourceId(parameters('networkSettings').VNETResourceGroupName,'Microsoft.Network/virtualNetworks', parameters('networkSettings').VNETName), '/subnets/',parameters('networkSettings').SubnetName)]"
+                                 "id": "[concat(resourceId(parameters('networkSettings').VNETResourceGroupName,'Microsoft.Network/virtualNetworks', parameters('networkSettings').virtualNetworkName), '/subnets/',parameters('networkSettings').subnetName)]"
                              }
                          }
                      }
@@ -105,7 +105,7 @@
                      "osDisk": {
                          "name": "[concat(parameters('machineSettings').machineNamePrefix,'jumpbox-os-disk')]",
                          "vhd": {
-                             "uri": "[concat(parameters('storageSettings').destinationVhdsContainer,'jumpbox-os-disk.vhd')]"
+                             "uri": "[concat(parameters('storageSettings').destinationVhdsContainer,'/','jumpbox-os-disk.vhd')]"
                          },
                          "caching": "ReadWrite",
                          "createOption": "FromImage"

@@ -112,7 +112,7 @@
         },
         "vmStrongAccountContainer":"vhds",
         "vmStorageAccountDomainAzureCloud":".blob.core.windows.net",
-        "vmStorageAccountDomainAzureChinaCloud":".bloc.core.chinacloudapi.cn",
+        "vmStorageAccountDomainAzureChinaCloud":".blob.core.chinacloudapi.cn",
         "cacheEndpointAzureCloud":".redis.cache.windows.net",
         "cacheEndpointAzureChinaCloud":".redis.cache.chinacloudapi.cn",
         "cacheEndpoint":"[variables(concat('cacheEndpoint',parameters('Cloud')))]",
@@ -143,11 +143,12 @@
         },
         "machineSettings":{
             "adminUserName":"[parameters('adminUserName')]",
-            "machineNamePrefix":"coffeshop-",
+            "machineNamePrefix":"app-",
             "osImageReference":{
                 "publisher":"[variables('osFamilyWindows').imagePublisher]",
                 "offer":"[variables('osFamilyWindows').imageOffer]",
-                "sku":"[variables('osFamilyWindows').imageSKU]"
+                "sku":"[variables('osFamilyWindows').imageSKU]",
+                "version":"latest"
             }
         },
         "databaseServerSettings":{
