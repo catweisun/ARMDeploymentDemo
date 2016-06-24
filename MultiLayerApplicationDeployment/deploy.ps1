@@ -1,15 +1,17 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]
-    $RGNamePlaceHolder,
-    [Parameter(Mandatory=$true)]
-    [string]
-    $Location = "China North",
-    [Parameter(Mandatory=$true)]
-    [Boolean]
-    $IsLocalTemplate = $true
+    $RGNamePlaceHolder
+    #[Parameter(Mandatory=$true)]
+    #[string]
+    #$Location = "China North",
+    #[Parameter(Mandatory=$true)]
+    #[Boolean]
+    #$IsLocalTemplate = $true
 )
 #$loc = "China North"
+$Location = "China North"
+$IsLocalTemplate = $true
 $locsubffix = $Location.Replace(" ","").ToLower()
 
 $TemplateBaseUri = "https://raw.githubusercontent.com/catweisun/ARMDeploymentDemo/master/MultiLayerApplicationDeployment/"
