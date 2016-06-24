@@ -4,7 +4,7 @@ param(
     $RGNamePlaceHolder,
     [Parameter(Mandatory=$true)]
     [string]
-    $Location,
+    $Location = "China North",
     [Parameter(Mandatory=$true)]
     [Boolean]
     $IsLocalTemplate = $true
