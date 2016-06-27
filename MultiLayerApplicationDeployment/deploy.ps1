@@ -34,6 +34,9 @@ else {
     Login-AzureRmAccount
     Select-AzureRmSubscription -SubscriptionId 812441bb-dd47-463f-8ded-fcc8c95f9754 
 }
+$checkscriptPath = $TemplateBaseUri+"checkresource.ps1"
+. ".\updateLocalParameters.ps1" -NamePlaceHolder $RGNamePlaceHolder -FilePath $checkscriptPath
+
 $beginTime = Get-Date
 $resources|Sort-Object -Property{$_.Seq}|foreach{
     $RGName = "RG-ARM-HOL-"+$RGNamePlaceHolder+"-"+$_.RGNameSuffix

@@ -30,6 +30,7 @@ Set-AzureStorageBlobContent -Container $templateContainerName -File applicationj
 Set-AzureStorageBlobContent -Container $templateContainerName -File empty-resource.json -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File updateLocalParameters.ps1 -Context $ctx -Force|Out-Null
 Set-AzureStorageBlobContent -Container $templateContainerName -File updateKeyVaultParameters.ps1 -Context $ctx -Force|Out-Null
+Set-AzureStorageBlobContent -Container $templateContainerName -File checkresource.ps1 -Context $ctx -Force|Out-Null
 Write-Host "completed!"
 #publish DSC configuration
 #Publish-AzureRmVMDscConfiguration -ResourceGroupName $RGNameTemplate -StorageAccountName $StgAcctName -ContainerName $templateContainerName -StorageEndpointSuffix $storageEndpointSuffix -ConfigurationPath JumpboxDscConfiguration.ps1

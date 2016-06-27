@@ -50,7 +50,7 @@ Configuration AzurePowershell{
             }
             $baseUrl = "https://armdemotemplatestorage.blob.core.chinacloudapi.cn/"            
             $filelist0=@("deploy.ps1","StartJumpboxVM.ps1","StopJumpboxVM.ps1")
-            $filelist1=@("applicationsystem.json","applicationsystem.chinanorth.parameters.json","deploy.ps1","keyvault.json","keyvault.chinanorth.parameters.json","network.json","network.chinanorth.parameters.json","shared-resource.json","siteapplication.json","updateKeyVaultParameters.ps1","updateLocalParameters.ps1")
+            $filelist1=@("applicationsystem.json","applicationsystem.chinanorth.parameters.json","deploy.ps1","keyvault.json","keyvault.chinanorth.parameters.json","network.json","network.chinanorth.parameters.json","empty-resource.json","empty-shared-resource.json","shared-resource.json","siteapplication.json","updateKeyVaultParameters.ps1","updateLocalParameters.ps1","checkresource.ps1")
             foreach($file in $filelist0)
             {
                 $cnt = "automationtemplates"

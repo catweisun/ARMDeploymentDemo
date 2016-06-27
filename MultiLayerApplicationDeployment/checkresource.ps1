@@ -1,0 +1,1 @@
+Get-AzureRmresource |?{$_.ResourceGroupName -eq "RG-ARM-HOL-{NamePlaceHolder}-Application"}|Select ResourceName,ResourceType

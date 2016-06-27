@@ -118,23 +118,6 @@
                     }
                 }
             ]
-        },
-        {
-            "apiVersion": "2014-04-01-preview",
-            "name": "[variables('cacheName')]",
-            "type": "Microsoft.Cache/Redis",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "MidCache"
-            },
-            "properties": {
-                "sku": {
-                    "name": "[parameters('deployenvironment').redisCacheFamily]",
-                    "family": "C",
-                    "capacity": "[parameters('deployenvironment').redisCacheCapacity]"
-                },
-                "redisVersion": "2.8"
-            }
         }
     ]
 }
