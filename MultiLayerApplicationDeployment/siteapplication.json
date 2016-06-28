@@ -16,7 +16,7 @@
         }
     },
     "variables": {
-        "webfarmplanName":"siteapplicationPlan",
+        "webfarmplanName":"[concat('siteplan',uniqueString(resourceGroup().id))]",
         "websiteName":"[concat('webiste',uniqueString(resourceGroup().id))]",
         "cacheName":"[concat('cache',uniqueString(resourceGroup().id))]"
     },
@@ -95,8 +95,7 @@
                 "displayName": "[variables('websiteName')]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Web/serverFarms/', variables('webfarmplanName'))]",
-                "[concat('Microsoft.Cache/Redis/',variables('cacheName'))]"
+                "[concat('Microsoft.Web/serverFarms/', variables('webfarmplanName'))]"
             ],
             "properties": {
                 "name": "[variables('websiteName')]",
