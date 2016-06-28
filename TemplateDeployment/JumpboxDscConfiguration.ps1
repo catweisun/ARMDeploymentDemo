@@ -78,5 +78,21 @@ Configuration AzurePowershell{
          ProductId = "9CC296AD-833C-4521-A611-3FA93087980B"
          DependsOn = "[Script]downloadAzurePowerShell"
      }
+     Registry AddTrustedSiteLogin
+     {
+         Ensure = "Present"
+         Key = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains\microsoftonline.cn\login.partner"
+         ValueType = "REG_DWORD"
+         ValueName = "https"
+         ValueData = "2"   
+     }
+     Registry AddTrustedSiteCDN
+     {
+         Ensure = "Present"
+         Key = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains\microsoftonline-p.cn\secure.aadcdn.partner"
+         ValueType = "REG_DWORD"
+         ValueName = "https"
+         ValueData = "2"   
+     }
  } 
 }

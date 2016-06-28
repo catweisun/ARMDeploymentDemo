@@ -68,15 +68,15 @@
      {
          "apiVersion": "2015-06-15",
          "type": "Microsoft.Network/publicIPAddresses",
-         "name": "[concat('ARMHOLVM-',copyIndex(),'-PublicIP')]",
+         "name": "[concat('ARMHOLVM-',copyIndex(1),'-PublicIP')]",
          "location": "[resourceGroup().location]",
          "tags": {
-             "displayName": "[concat('PublicIPAddress-',copyIndex())]"
+             "displayName": "[concat('PublicIPAddress-',copyIndex(1))]"
           } ,
          "properties": {
              "publicIPAllocationMethod": "Dynamic",
              "dnsSettings": {
-                 "domainNameLabel": "[concat(toLower('ARMHOLVM-'),copyIndex())]"
+                 "domainNameLabel": "[concat(toLower('ARMHOLVM-'),copyIndex(1))]"
              }
          },
          "copy": {
@@ -87,15 +87,15 @@
      {
          "apiVersion": "2015-06-15",
          "type": "Microsoft.Network/networkInterfaces",
-         "name": "[concat('ARMHOLVM-',copyIndex(),'-NetworkInterface')]",
+         "name": "[concat('ARMHOLVM-',copyIndex(1),'-NetworkInterface')]",
          "location": "[resourceGroup().location]",
          "dependsOn": [
-             "[concat('Microsoft.Network/publicIPAddresses/ARMHOLVM-',copyIndex(),'-PublicIP')]",
+             "[concat('Microsoft.Network/publicIPAddresses/ARMHOLVM-',copyIndex(1),'-PublicIP')]",
              "[concat('Microsoft.Network/virtualNetworks/','JumpboxVnet')]"
 
          ],
          "tags": {
-             "displayName": "[concat('ARMHOLVM Network Interface ',copyIndex())]"
+             "displayName": "[concat('ARMHOLVM Network Interface ',copyIndex(1))]"
           } ,
          "properties": {
              "ipConfigurations": [
@@ -104,7 +104,7 @@
                      "properties": {
                          "privateIPAllocationMethod": "Dynamic",
                          "publicIPAddress": {
-                             "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('ARMHOLVM-',copyIndex(),'-PublicIP'))]"
+                             "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('ARMHOLVM-',copyIndex(1),'-PublicIP'))]"
                          },
                          "subnet": {
                              "id": "[variables('subnetRef')]"
@@ -121,7 +121,7 @@
      {
          "apiVersion": "2015-06-15",
          "type": "Microsoft.Compute/virtualMachines",
-         "name": "[concat('ARMHOLVM-',copyIndex())]",
+         "name": "[concat('ARMHOLVM-',copyIndex(1))]",
          "location": "[resourceGroup().location]",
           "copy": {
            "name": "VMCopy",
@@ -129,17 +129,17 @@
          },
          "dependsOn": [
              "[concat('Microsoft.Storage/storageAccounts/', toLower('ARMHOLVMstorage'))]",
-             "[concat('Microsoft.Network/networkInterfaces/ARMHOLVM-',copyIndex(),'-NetworkInterface')]"
+             "[concat('Microsoft.Network/networkInterfaces/ARMHOLVM-',copyIndex(1),'-NetworkInterface')]"
          ],
          "tags": {
-             "displayName": "[concat('ARMHOLVM-',copyIndex())]"
+             "displayName": "[concat('ARMHOLVM-',copyIndex(1))]"
           } ,
          "properties": {
              "hardwareProfile": {
                  "vmSize": "Standard_A1"
              },
              "osProfile": {
-                 "computerName": "[concat('ARMHOLVM-',copyIndex())]",
+                 "computerName": "[concat('ARMHOLVM-',copyIndex(1))]",
                  "adminUsername": "[parameters('adminName')]",
                  "adminPassword": "[parameters('adminPassword')]"
              },
@@ -151,9 +151,9 @@
                      "version": "latest"
                  },
                  "osDisk": {
-                     "name": "[concat('ARMHOLVM-',copyIndex(),'-OSDisk')]",
+                     "name": "[concat('ARMHOLVM-',copyIndex(1),'-OSDisk')]",
                      "vhd": {
-                         "uri": "[concat('http://', toLower('ARMHOLVMstorage'), '.blob.core.chinacloudapi.cn/vhds/ARMHOLVM-',copyIndex(),'-OSDisk.vhd')]"
+                         "uri": "[concat('http://', toLower('ARMHOLVMstorage'), '.blob.core.chinacloudapi.cn/vhds/ARMHOLVM-',copyIndex(1),'-OSDisk.vhd')]"
                      },
                      "caching": "ReadWrite",
                      "createOption": "FromImage"
@@ -162,7 +162,7 @@
              "networkProfile": {
                  "networkInterfaces": [
                      {
-                         "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('ARMHOLVM-',copyIndex(),'-NetworkInterface'))]"
+                         "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('ARMHOLVM-',copyIndex(1),'-NetworkInterface'))]"
                      }
                  ]
              }
@@ -170,14 +170,14 @@
          "resources": [
              {
                  "type": "extensions",
-                 "name": "[concat('ARMHOLVM-',copyIndex(),'-DSC-AzurePS')]",
+                 "name": "[concat('ARMHOLVM-',copyIndex(1),'-DSC-AzurePS')]",
                  "apiVersion": "2015-06-15",
                  "location": "[resourceGroup().location]",
                  "tags": {
-                     "displayName": "[concat('ARMHOLVM-',copyIndex(),'-DSC-AzurePS')]"
+                     "displayName": "[concat('ARMHOLVM-',copyIndex(1),'-DSC-AzurePS')]"
                  },
                  "dependsOn": [
-                     "[concat('Microsoft.Compute/virtualMachines/ARMHOLVM-',copyIndex())]"
+                     "[concat('Microsoft.Compute/virtualMachines/ARMHOLVM-',copyIndex(1))]"
                  ],
                  "properties": {
                      "publisher": "Microsoft.Powershell",
