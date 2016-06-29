@@ -82,7 +82,7 @@ Configuration AzurePowershell{
      {
          Ensure = "Present"
          Key = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains\microsoftonline.cn\login.partner"
-         ValueType = "REG_DWORD"
+         ValueType = "DWORD"
          ValueName = "https"
          ValueData = "2"   
      }
@@ -90,7 +90,7 @@ Configuration AzurePowershell{
      {
          Ensure = "Present"
          Key = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\EscDomains\microsoftonline-p.cn\secure.aadcdn.partner"
-         ValueType = "REG_DWORD"
+         ValueType = "DWORD"
          ValueName = "https"
          ValueData = "2"   
      }
